@@ -1,0 +1,15 @@
+package main
+
+import "fmt"
+
+func  repplace(s string , old,new byte)string{
+	result:=""
+	for i:=0;i<len(s);i++{
+		if s[i]==old{
+			result+=string(new)
+		}else{
+			result+=string(s[i])
+		}
+	}
+	return result
+}
