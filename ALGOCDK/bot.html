@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlgoCDK | {{.Bot.Name}}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-confetti@0.11.0/dist/js-confetti.browser.js"></script>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --secondary: #10b981;
+            --dark: #1e293b;
+            --darker: #0f172a;
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+        }
+        .bot-card {
+            transition: all 0.3s ease;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .bot-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        .nav-active {
+            border-left: 3px solid var(--primary);
+            font-weight: 500;
+            color: var(--primary);
+        }
+        .profit-badge {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--secondary);
+        }
+        .deriv-badge {
+            background-color: rgba(79, 70, 229, 0.1);
+            color: var(--primary);
+        }
+        .sidebar {
+            transition: transform 0.3s ease;
+        }
+        .sidebar-hidden {
+            transform: translateX(-100%);
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                z-index: 50;
+                width: 256px;
+                height: 100%;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Sidebar -->
+    <aside class="sidebar fixed top-0 left-0 w-64 h-full bg-white shadow-md z-40 md:static md:translate-x-0 sidebar-hidden md:sidebar-visible" id="sidebar">
+        <div class="flex items-center space-x-2 p-4 border-b border-gray-200">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+            <span class="text-xl font-bold text-gray-800">AlgoCDK</span>
+        </div>
+        <nav class="mt-6">
+            <a href="/dashboard" class="block px-4 py-2 text-sm font-medium text-gray-500 hover:text-indigo-600 {{if eq .BotType `Featured`}}nav-active{{end}}">Featured</a>
+            <a href="/dashboard" class="block px-4 py-2 text-sm font-medium text-gray-500 hover:text-indigo-600 {{if eq .BotType `Trending`}}nav-active{{end}}">Trending</a>
+            <a href="#" class="block px-4 py-2 text-sm font-medium text-gray-500 hover:text-indigo-600">Forex</a>
+            <a href="#" class="block px-4 py-2 text-sm font-medium text-gray-500 hover:text-indigo-600">Cryptocurrency</a>
+            <a href="#" class="block px-4 py-2 text-sm font-medium text-gray-500 hover:text-indigo-600">Commodities</a>
+            <a href="#" class="block px-4 py-2 text-sm font-medium text-gray-500 hover:text-indigo-600">Indices</a>
+            <a href="#" class="block px-4 py-2 text-sm font-medium text-gray-500 hover:text-indigo-600">My Bots</a>
+        </nav>
+    </aside>
+
+    <!-- Main Container -->
+    <div class="flex">
+        <!-- Sidebar Toggle Button (Mobile) -->
+        <button class="md:hidden fixed top-4 left-4 z-50 p-2 bg-indigo-600 text-white rounded-md" id="sidebar-toggle">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+        </button>
+
+        <!-- Main Content -->
+        <div class="flex-1 md:ml-64">
+            <!-- Header -->
+            <header class="bg-white shadow-sm">
+                <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xl font-bold text-gray-800 md:hidden">AlgoCDK</span>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <input type="text" placeholder="Search bots..." class="pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="font-medium">{{.Email}}</span>
+                            <a href="/logout" class="text-sm font-medium text-indigo-600 hover:text-indigo-800">Logout</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Content -->
+            <main class="container mx-auto px-4 py-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Trading Bot: {{.Bot.Name}}</h2>
+
+                <!-- Bot Details -->
+                <section class="mb-10">
+                    <div class="bot-card bg-white">
+                        <div class="relative">
+                            <img src="{{.Bot.Image}}" alt="{{.Bot.Name}}" class="w-full h-48 object-cover">
+                            <div class="absolute top-2 left-2 px-2 py-1 rounded-md text-xs font-medium profit-badge">{{.Bot.ROI}}</div>
+                            <div class="absolute top-2 right-2 px-2 py-1 rounded-md text-xs font-medium deriv-badge">{{.Bot.Platform}}</div>
+                        </div>
+                        <div class="p-4">
+                            <div class="flex justify-between items-start">
+                                <h3 class="font-bold text-gray-800">{{.Bot.Name}}</h3>
+                                <div class="flex items-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3 .921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                    </svg>
+                                    <span class="text-sm ml-1">{{.Bot.Rating}}</span>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-1">By {{.Bot.Creator}}</p>
+                            <p class="text-sm text-gray-600 mt-2">{{.Bot.Description}}</p>
+                            <p class="font-bold text-gray-800 mt-4">{{.Bot.Price}}</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Trading Interface -->
+                <section class="mb-10">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Trade with {{.Bot.Name}}</h3>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <!-- Trading Controls -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Stake Amount ($)</label>
+                                <input type="number" id="stake" value="10" min="1" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Contract Type</label>
+                                <select id="contract-type" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                    <option value="rise">Rise</option>
+                                    <option value="fall">Fall</option>
+                                    <option value="over1">Over 1</option>
+                                    <option value="over2">Over 2</option>
+                                    <option value="under8">Under 8</option>
+                                    <option value="under9">Under 9</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Stop Loss ($)</label>
+                                <input type="number" id="stop-loss" value="50" min="0" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Profit Target ($)</label>
+                                <input type="number" id="profit-target" value="100" min="0" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            </div>
+                        </div>
+                        <div class="flex space-x-4">
+                            <button id="start-bot" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition">Start Bot</button>
+                            <button id="stop-bot" class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition" disabled>Stop Bot</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Trade History -->
+                <section class="mb-10">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Trade History</h3>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <div id="trade-log" class="text-sm text-gray-600">
+                            <p>No trades executed yet.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Trade Performance Chart -->
+                <section>
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Trade Performance</h3>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <canvas id="trade-chart"></canvas>
+                    </div>
+                </section>
+            </main>
+
+            <!-- Footer -->
+            <footer class="bg-white border-t border-gray-200 mt-10">
+                <div class="container mx-auto px-4 py-6">
+                    <div class="flex flex-col md:flex-row justify-between items-center">
+                        <div class="flex items-center space-x-2 mb-4 md:mb-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                            <span class="text-lg font-bold text-gray-800">AlgoCDK</span>
+                        </div>
+                        <div class="flex space-x-6">
+                            <a href="#" class="text-gray-600 hover:text-indigo-600">About</a>
+                            <a href="#" class="text-gray-600 hover:text-indigo-600">Terms</a>
+                            <a href="#" class="text-gray-600 hover:text-indigo-600">Privacy</a>
+                            <a href="#" class="text-gray-600 hover:text-indigo-600">Contact</a>
+                        </div>
+                    </div>
+                    <div class="mt-4 text-center md:text-left text-sm text-gray-500">
+                        © 2023 AlgoCDK. All rights reserved. Deriv is a registered trademark.
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Trading Script -->
+    <script>
+        const confetti = new JSConfetti();
+        const tradeLog = document.getElementById("trade-log");
+        const startButton = document.getElementById("start-bot");
+        const stopButton = document.getElementById("stop-bot");
+        let isBotRunning = false;
+        let balance = 1000; // Demo balance
+        let trades = [];
+
+        // Chart setup
+        const ctx = document.getElementById("trade-chart").getContext("2d");
+        const tradeChart = new Chart(ctx, {
+            type: "line",
+            data: {
+                labels: [],
+                datasets: [{
+                    label: "Balance ($)",
+                    data: [balance],
+                    borderColor: "rgba(79, 70, 229, 1)",
+                    backgroundColor: "rgba(79, 70, 229, 0.2)",
+                    fill: true,
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: { beginAtZero: false }
+                }
+            }
+        });
+
+        function updateTradeLog(message) {
+            const p = document.createElement("p");
+            p.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+            tradeLog.appendChild(p);
+            tradeLog.scrollTop = tradeLog.scrollHeight;
+        }
+
+        function placeTrade() {
+            if (!isBotRunning) return;
+            const stake = parseFloat(document.getElementById("stake").value);
+            const contractType = document.getElementById("contract-type").value;
+            const stopLoss = parseFloat(document.getElementById("stop-loss").value);
+            const profitTarget = parseFloat(document.getElementById("profit-target").value);
+
+            // Simulate trade (replace with actual Deriv API call)
+            const outcome = Math.random() > 0.5 ? "win" : "loss";
+            const profit = outcome === "win" ? stake * 1.8 : -stake; // 80% payout for demo
+            balance += profit;
+            trades.push({ time: new Date().toLocaleTimeString(), outcome, profit, balance });
+
+            updateTradeLog(`Trade [${contractType}]: ${outcome.toUpperCase()}, Profit: ${profit.toFixed(2)}, Balance: ${balance.toFixed(2)}`);
+            if (outcome === "win") confetti.addConfetti();
+
+            // Update chart
+            tradeChart.data.labels.push(new Date().toLocaleTimeString());
+            tradeChart.data.datasets[0].data.push(balance);
+            tradeChart.update();
+
+            // Check stop loss or profit target
+            if (balance <= 1000 - stopLoss || balance >= 1000 + profitTarget) {
+                stopBot();
+                updateTradeLog(`Bot stopped: ${balance <= 1000 - stopLoss ? "Stop loss reached" : "Profit target reached"}`);
+            } else {
+                setTimeout(placeTrade, 3000); // Simulate next trade after 3 seconds
+            }
+        }
+
+        function startBot() {
+            if (!isBotRunning) {
+                isBotRunning = true;
+                startButton.disabled = true;
+                stopButton.disabled = false;
+                updateTradeLog("Bot started");
+                placeTrade();
+            }
+        }
+
+        function stopBot() {
+            if (isBotRunning) {
+                isBotRunning = false;
+                startButton.disabled = false;
+                stopButton.disabled = true;
+                updateTradeLog("Bot stopped");
+            }
+        }
+
+        startButton.addEventListener("click", startBot);
+        stopButton.addEventListener("click", stopBot);
+
+        // Sidebar toggle
+        const sidebar = document.getElementById("sidebar");
+        const sidebarToggle = document.getElementById("sidebar-toggle");
+        sidebarToggle.addEventListener("click", () => {
+            sidebar.classList.toggle("sidebar-hidden");
+        });
+    </script>
+</body>
+</html>

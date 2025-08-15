@@ -75,7 +75,7 @@ func getBotData() BotData {
             },
             {
                 Name:        "Bitcoin Trend Rider",
-                Image:       "/static/Images/bit.jpg",
+                Image:       "/static/Images/bot1.jpg",
                 ROI:         "+65% ROI",
                 Platform:    "Deriv",
                 Rating:      "4.6",
@@ -85,7 +85,7 @@ func getBotData() BotData {
             },
             {
                 Name:        "Forex Hedge Master",
-                Image:      "/static/Images/bit.jpg",
+                Image:      "/static/Images/bot2.jpg",
                 ROI:         "+57% ROI",
                 Platform:    "Deriv",
                 Rating:      "4.9",
@@ -95,7 +95,7 @@ func getBotData() BotData {
             },
             {
                 Name:        "Oil Surfer Pro",
-                Image:      "/static/Images/bit.jpg",
+                Image:      "/static/Images/bot3.jpg",
                 ROI:         "+73% ROI",
                 Platform:    "Deriv",
                 Rating:      "4.7",
@@ -107,7 +107,7 @@ func getBotData() BotData {
         TrendingBots: []Bot{
             {
                 Name:        "Index Master",
-                Image:       "/static/Images/bit.jpg",
+                Image:       "/static/Images/bot4.jpg",
                 ROI:         "+68% ROI",
                 Platform:    "Deriv",
                 Rating:      "4.9",

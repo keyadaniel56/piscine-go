@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlgoCDK | Register</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: 
+                linear-gradient(rgba(10, 15, 25, 0.9), rgba(10, 15, 25, 0.9)),
+                url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600"><defs><pattern id="grid" width="80" height="80" patternUnits="userSpaceOnUse"><path d="M 80 0 L 0 0 0 80" fill="none" stroke="%2337475a" stroke-width="0.5"/></pattern></defs><rect width="100%" height="100%" fill="%230a0f19"/><rect width="100%" height="100%" fill="url(%23grid)"/><g stroke-linecap="round" stroke-linejoin="round"><path d="M50,450 C150,300 250,500 350,350 C450,200 550,400 650,250" stroke="%2334d399" fill="none" stroke-width="2.5" opacity="0.8"/><path d="M50,250 L150,350 L250,200 L350,300 L450,150 L550,250 L650,100" stroke="%23dc2626" fill="none" stroke-width="2" opacity="0.8"/></g><g fill-opacity="0.8"><rect x="100" y="350" width="40" height="100" fill="%23dc2626" opacity="0.7"/><rect x="180" y="250" width="40" height="200" fill="%2334d399" opacity="0.7"/><rect x="260" y="300" width="40" height="150" fill="%23dc2626" opacity="0.7"/><rect x="340" y="200" width="40" height="250" fill="%2334d399" opacity="0.7"/><rect x="420" y="350" width="40" height="100" fill="%23dc2626" opacity="0.7"/><rect x="500" y="150" width="40" height="300" fill="%2334d399" opacity="0.7"/><rect x="580" y="400" width="40" height="50" fill="%23dc2626" opacity="0.7"/></g></svg>');
+            color: white;
+            min-height: 100vh;
+            font-family: 'Inter', sans-serif;
+            animation: moveBackground 120s linear infinite;
+        }
+        
+        @keyframes moveBackground {
+            0% { background-position: 0 0; }
+            100% { background-position: 800px 600px; }
+        }
+        
+        .register-container {
+            background: rgba(17, 24, 39, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(220, 38, 38, 0.2);
+            box-shadow: 0 0 30px rgb(220 38 38 / 0.3);
+        }
+        
+        .input-field {
+            background: rgba(42, 42, 42, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #ef4444;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.7);
+        }
+        
+        .btn-register {
+            background-color: #dc2626;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-register:hover {
+            background-color: #b91c1c;
+            box-shadow: 0 5px 15px rgba(220, 38, 38, 0.4);
+        }
+        
+        .btn-register::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 200%;
+            height: 200%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: rotate(30deg);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-register:hover::after {
+            left: 100%;
+        }
+        
+        .password-container {
+            position: relative;
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6b7280;
+        }
+        
+        .toggle-password:hover {
+            color: #ef4444;
+        }
+        
+        .password-strength {
+            height: 4px;
+            transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body class="flex flex-col">
+    <!-- Header -->
+    <header class="bg-white shadow-sm">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                <span class="text-xl font-bold text-gray-800">AlgoCDK</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <a href="/login" class="text-sm font-medium text-indigo-600 hover:text-indigo-800">Login</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow flex items-center justify-center p-4">
+        <div class="register-container w-full max-w-md p-8 rounded-lg">
+            <div class="text-center mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
+                </svg>
+                <h1 class="text-2xl font-bold mt-2 text-white">Create Your Account</h1>
+                <p class="text-gray-400 mt-2">Join our algorithmic trading community</p>
+            </div>
+
+            <form method="POST" action="/register" class="space-y-5">
+                <div>
+                    <label for="email" class="block mb-2 font-semibold text-gray-300">Email</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        required
+                        class="input-field w-full px-4 py-3 rounded-md text-white"
+                        placeholder="your@email.com"
+                        autocomplete="email"
+                    />
+                </div>
+
+                <div class="password-container">
+                    <label for="password" class="block mb-2 font-semibold text-gray-300">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        required
+                        class="input-field w-full px-4 py-3 rounded-md text-white"
+                        placeholder="••••••••"
+                        autocomplete="new-password"
+                        oninput="checkPasswordStrength()"
+                    />
+                    <span class="toggle-password" onclick="togglePasswordVisibility()">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                        </svg>
+                    </span>
+                    <div class="flex mt-2 space-x-1">
+                        <div id="strength-1" class="password-strength w-full bg-gray-600 rounded-full"></div>
+                        <div id="strength-2" class="password-strength w-full bg-gray-600 rounded-full"></div>
+                        <div id="strength-3" class="password-strength w-full bg-gray-600 rounded-full"></div>
+                        <div id="strength-4" class="password-strength w-full bg-gray-600 rounded-full"></div>
+                    </div>
+                </div>
+
+                <div>
+                    <label for="confirm-password" class="block mb-2 font-semibold text-gray-300">Confirm Password</label>
+                    <input
+                        type="password"
+                        id="confirm-password"
+                        name="confirm-password"
+                        required
+                        class="input-field w-full px-4 py-3 rounded-md text-white"
+                        placeholder="••••••••"
+                        autocomplete="new-password"
+                    />
+                </div>
+
+                <div class="flex items-center">
+                    <input type="checkbox" id="terms" name="terms" required class="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                    <label for="terms" class="ml-2 block text-sm text-gray-400">
+                        I agree to the <a href="#" class="text-red-400 hover:underline">Terms of Service</a> and <a href="#" class="text-red-400 hover:underline">Privacy Policy</a>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn-register w-full py-3 rounded-md font-semibold text-white">
+                    Register
+                </button>
+            </form>
+
+            <div class="mt-6 text-center text-gray-400 text-sm">
+                Already have an account? 
+                <a href="/login" class="text-red-500 hover:underline font-semibold">Login here</a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200">
+        <div class="container mx-auto px-4 py-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center space-x-2 mb-4 md:mb-0">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    <span class="text-lg font-bold text-gray-800">AlgoCDK</span>
+                </div>
+                <div class="flex space-x-6">
+                    <a href="#" class="text-gray-600 hover:text-indigo-600">About</a>
+                    <a href="#" class="text-gray-600 hover:text-indigo-600">Terms</a>
+                    <a href="#" class="text-gray-600 hover:text-indigo-600">Privacy</a>
+                    <a href="#" class="text-gray-600 hover:text-indigo-600">Contact</a>
+                </div>
+            </div>
+            <div class="mt-4 text-center md:text-left text-sm text-gray-500">
+                © 2023 AlgoCDK. All rights reserved. Deriv is a registered trademark.
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function togglePasswordVisibility() {
+            const passwordField = document.getElementById('password');
+            const confirmField = document.getElementById('confirm-password');
+            const type = passwordField.getAttribute('type') === 'password' ? 'text' : 'password';
+            
+            passwordField.setAttribute('type', type);
+            confirmField.setAttribute('type', type);
+            
+            // Toggle eye icon
+            const eyeIcon = document.querySelector('.toggle-password svg');
+            if (type === 'text') {
+                eyeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />';
+            } else {
+                eyeIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />';
+            }
+        }
+
+        function checkPasswordStrength() {
+            const password = document.getElementById('password').value;
+            const strengthBars = [
+                document.getElementById('strength-1'),
+                document.getElementById('strength-2'),
+                document.getElementById('strength-3'),
+                document.getElementById('strength-4')
+            ];
+            
+            // Reset all bars
+            strengthBars.forEach(bar => {
+                bar.classList.remove('bg-red-500', 'bg-yellow-500', 'bg-green-500');
+                bar.classList.add('bg-gray-600');
+            });
+            
+            if (password.length === 0) return;
+            
+            // Very weak
+            if (password.length < 6) {
+                strengthBars[0].classList.remove('bg-gray-600');
+                strengthBars[0].classList.add('bg-red-500');
+                return;
+            }
+            
+            // Weak
+            if (password.length < 8) {
+                strengthBars[0].classList.remove('bg-gray-600');
+                strengthBars[1].classList.remove('bg-gray-600');
+                strengthBars[0].classList.add('bg-red-500');
+                strengthBars[1].classList.add('bg-red-500');
+                return;
+            }
+            
+            // Medium (check for numbers/symbols)
+            let strength = 2;
+            if (/[0-9]/.test(password)) strength++;
+            if (/[^A-Za-z0-9]/.test(password)) strength++;
+            
+            // Update bars
+            for (let i = 0; i < strength; i++) {
+                strengthBars[i].classList.remove('bg-gray-600');
+                if (strength <= 2) {
+                    strengthBars[i].classList.add('bg-red-500');
+                } else if (strength === 3) {
+                    strengthBars[i].classList.add('bg-yellow-500');
+                } else {
+                    strengthBars[i].classList.add('bg-green-500');
+                }
+            }
+        }
+    </script>
+</body>
+</html>
