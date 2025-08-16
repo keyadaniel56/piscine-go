@@ -5,17 +5,21 @@ import (
 )
 
 func searchreplace(input, search, replace string) string {
-	result := ""
-	if len(search) != 1 || len(replace) != 1 {
+	inputRune := []rune(input)
+	searchRune := []rune(search)
+	replaceRune := []rune(replace)
+
+	if len(searchRune) != 1 || len(inputRune) != 1 {
 		return input
 	}
-	s := search[0]
-	r := replace[0]
-	for i := 0; i < len(input); i++ {
-		if input[i] == s {
+	s := searchRune[0]
+	r := replaceRune[0]
+	result := ""
+	for _, char := range inputRune {
+		if char == s {
 			result += string(r)
 		} else {
-			result += string(input[i])
+			result += string(char)
 		}
 	}
 	return result
@@ -28,5 +32,7 @@ func main() {
 	input := os.Args[1]
 	search := os.Args[2]
 	replace := os.Args[3]
-	os.Stdout.Write([]byte(searchreplace(input, search, replace) + "\n"))
+
+	result := searchreplace(input, search, replace)
+	os.Stdout.Write([]byte(result + "\n"))
 }
