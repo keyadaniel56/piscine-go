@@ -9,7 +9,7 @@ func PrintIfNot(str string) string {
 	if len(str) == 0 {
 		return "\n"
 	}
-	return "Invalid Input" +"\n"
+	return "Invalid Input" + "\n"
 }
 
 func main() {
