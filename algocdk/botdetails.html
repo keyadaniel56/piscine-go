@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bot Details - AlgoCDK</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    colors: {
+                        dark: {
+                            900: '#0f172a',
+                            800: '#1e293b',
+                            700: '#334155',
+                        },
+                        primary: {
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%233b82f6' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+            opacity: 0.5;
+            z-index: -1;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 25%, #6366f1 50%, #8b5cf6 75%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: gradientMove 5s ease infinite;
+        }
+        
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .sidebar {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(56, 66, 85, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item {
+            position: relative;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+        }
+        
+        .nav-item:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .nav-item.active {
+            background: rgba(59, 130, 246, 0.2);
+        }
+        
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 60%;
+            width: 4px;
+            background: linear-gradient(to bottom, #3b82f6, #6366f1);
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(16, 185, 129, 0.4);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(239, 68, 68, 0.4);
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(30, 41, 59, 0.9));
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px -5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .tab-button {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .tab-button.active {
+            border-bottom-color: #3b82f6;
+            color: white;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        
+        .review-card {
+            border-left: 3px solid #3b82f6;
+            transition: all 0.3s ease;
+        }
+        
+        .review-card:hover {
+            background: rgba(30, 41, 59, 0.5);
+            transform: translateX(5px);
+        }
+        
+        .rating-stars {
+            color: #f59e0b;
+        }
+        
+        .bot-tag {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            border-radius: 20px;
+            padding: 2px 8px;
+            font-size: 0.75rem;
+        }
+        
+        .progress-bar {
+            background: rgba(71, 85, 105, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #6366f1);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+    </style>
+</head>
+<body class="flex">
+    <!-- Sidebar -->
+    <aside class="sidebar w-64 p-6 h-screen sticky top-0 hidden md:block">
+        <div class="flex items-center mb-10">
+            <h1 class="text-2xl font-bold gradient-text">AlgoCDK</h1>
+        </div>
+        
+        <div class="mb-8 flex items-center p-3 bg-dark-700/30 rounded-lg">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold mr-3">JD</div>
+            <div>
+                <p class="font-medium text-white">John Doe</p>
+                <p class="text-xs text-gray-400">Pro Trader</p>
+            </div>
+        </div>
+        
+        <ul class="space-y-2">
+            <li><a href="dashboard.html" class="nav-item flex items-center p-3 text-gray-400 hover:text-white"><i class="fas fa-chart-pie mr-3 w-5"></i> Dashboard</a></li>
+            <li><a href="create-bot.html" class="nav-item flex items-center p-3 text-gray-400 hover:text-white"><i class="fas fa-robot mr-3 w-5"></i> Create Bot</a></li>
+            <li><a href="marketplace.html" class="nav-item flex items-center p-3 text-gray-400 hover:text-white"><i class="fas fa-store mr-3 w-5"></i> Marketplace</a></li>
+            <li><a href="analysis.html" class="nav-item flex items-center p-3 text-gray-400 hover:text-white"><i class="fas fa-chart-line mr-3 w-5"></i> Analysis</a></li>
+            <li><a href="community.html" class="nav-item flex items-center p-3 text-gray-400 hover:text-white"><i class="fas fa-users mr-3 w-5"></i> Community</a></li>
+            <li><a href="profile.html" class="nav-item flex items-center p-3 text-gray-400 hover:text-white"><i class="fas fa-user mr-3 w-5"></i> Profile</a></li>
+            <li><a href="settings.html" class="nav-item flex items-center p-3 text-gray-400 hover:text-white"><i class="fas fa-cog mr-3 w-5"></i> Settings</a></li>
+            <li><a href="index.html" onclick="logout()" class="nav-item flex items-center p-3 text-gray-400 hover:text-white"><i class="fas fa-sign-out-alt mr-3 w-5"></i> Logout</a></li>
+        </ul>
+        
+        <div class="mt-10 p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-lg border border-blue-500/20">
+            <h3 class="font-semibold text-white mb-2">Your Balance</h3>
+            <p class="text-xl font-bold text-white mb-3">$2,450.75</p>
+            <button class="btn-primary text-xs py-2 px-4 rounded-lg w-full">Add Funds</button>
+        </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="flex-1 p-6 overflow-auto">
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-8">
+            <div>
+                <h2 class="text-3xl font-bold text-white">Bot Details</h2>
+                <p class="text-gray-400">Complete information about this trading bot</p>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <a href="marketplace.html" class="btn-primary py-2 px-4 rounded-lg flex items-center">
+                    <i class="fas fa-arrow-left mr-2"></i> Back to Marketplace
+                </a>
+                
+                <button class="md:hidden text-gray-400 hover:text-white">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </header>
+        
+        <!-- Bot Overview -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+            <!-- Main Bot Info -->
+            <div class="card p-6 col-span-2">
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <h3 id="botName" class="text-2xl font-semibold text-white">Trend Rider Pro</h3>
+                        <div class="flex items-center mt-2">
+                            <div class="rating-stars mr-2">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star-half-alt"></i>
+                            </div>
+                            <span class="text-sm text-gray-400">4.5 (128 reviews)</span>
+                        </div>
+                    </div>
+                    <div class="flex space-x-2">
+                        <span class="bot-tag">Trend Following</span>
+                        <span class="bot-tag">BTC</span>
+                    </div>
+                </div>
+                
+                <p id="botDescription" class="text-gray-300 mb-6">Advanced trend following algorithm with machine learning adaptation. This bot identifies and rides market trends with sophisticated risk management techniques.</p>
+                
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="stat-card p-4">
+                        <p class="text-sm text-gray-400">Author</p>
+                        <p class="text-white font-medium">CryptoAlgo</p>
+                    </div>
+                    <div class="stat-card p-4">
+                        <p class="text-sm text-gray-400">Total Sales</p>
+                        <p class="text-white font-medium">89</p>
+                    </div>
+                    <div class="stat-card p-4">
+                        <p class="text-sm text-gray-400">Updated</p>
+                        <p class="text-white font-medium">2 weeks ago</p>
+                    </div>
+                    <div class="stat-card p-4">
+                        <p class="text-sm text-gray-400">Version</p>
+                        <p class="text-white font-medium">2.1.4</p>
+                    </div>
+                </div>
+                
+                <div class="flex space-x-4">
+                    <button onclick="buyBot()" class="btn-success py-3 px-6 rounded-lg flex items-center flex-1 justify-center">
+                        <i class="fas fa-shopping-cart mr-2"></i> Buy for <span id="botPrice" class="ml-1">$149</span>
+                    </button>
+                    <button onclick="sellBot()" class="btn-danger py-3 px-6 rounded-lg flex items-center">
+                        <i class="fas fa-dollar-sign mr-2"></i> Sell Copy
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Performance Stats -->
+            <div class="col-span-1">
+                <div class="card p-6">
+                    <h3 class="text-xl font-semibold text-white mb-4">Performance Stats</h3>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm text-gray-400">Avg. Monthly Return</span>
+                                <span class="text-sm font-medium text-green-500">+8.4%</span>
+                            </div>
+                            <div class="progress-bar h-2 w-full">
+                                <div class="progress-fill" style="width: 84%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm text-gray-400">Win Rate</span>
+                                <span class="text-sm font-medium text-green-500">76%</span>
+                            </div>
+                            <div class="progress-bar h-2 w-full">
+                                <div class="progress-fill" style="width: 76%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm text-gray-400">Max Drawdown</span>
+                                <span class="text-sm font-medium text-red-500">-12.3%</span>
+                            </div>
+                            <div class="progress-bar h-2 w-full">
+                                <div class="progress-fill bg-red-500" style="width: 32%"></div>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm text-gray-400">Volatility</span>
+                                <span class="text-sm font-medium text-yellow-500">Medium</span>
+                            </div>
+                            <div class="progress-bar h-2 w-full">
+                                <div class="progress-fill bg-yellow-500" style="width: 60%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tabs -->
+        <div class="flex border-b border-gray-700 mb-6">
+            <button class="tab-button py-3 px-6 mr-4 active" data-tab="overview">Overview</button>
+            <button class="tab-button py-3 px-6 mr-4" data-tab="performance">Performance</button>
+            <button class="tab-button py-3 px-6 mr-4" data-tab="reviews">Reviews</button>
+            <button class="tab-button py-3 px-6" data-tab="settings">Settings</button>
+        </div>
+        
+        <!-- Tab Content -->
+        <div id="tabContent">
+            <!-- Overview Tab -->
+            <div class="tab-pane active" id="overview">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="card p-6">
+                        <h3 class="text-xl font-semibold text-white mb-4">Strategy Details</h3>
+                        <p class="text-gray-300 mb-4">This bot uses a sophisticated trend-following algorithm that combines multiple technical indicators to identify and capitalize on market trends.</p>
+                        
+                        <ul class="space-y-2">
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                <span class="text-gray-300">Uses EMA crossovers for trend detection</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                <span class="text-gray-300">Implements machine learning for parameter optimization</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                <span class="text-gray-300">Advanced risk management with dynamic stop-loss</span>
+                            </li>
+                            <li class="flex items-center">
+                                <i class="fas fa-check-circle text-green-500 mr-2"></i>
+                                <span class="text-gray-300">Adapts to changing market conditions</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="card p-6">
+                        <h3 class="text-xl font-semibold text-white mb-4">Recommended Settings</h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <p class="text-sm text-gray-400">Timeframe</p>
+                                <p class="text-white">1 hour</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-400">Preferred Pairs</p>
+                                <p class="text-white">BTC/USD, ETH/USD, XRP/USD</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-400">Minimum Balance</p>
+                                <p class="text-white">$500</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-400">Risk Level</p>
+                                <p class="text-white">Medium</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Performance Tab (initially hidden) -->
+            <div class="tab-pane hidden" id="performance">
+                <div class="card p-6 mb-6">
+                    <h3 class="text-xl font-semibold text-white mb-6">Performance Chart</h3>
+                    <div class="chart-container">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="stat-card p-5 text-center">
+                        <p class="text-3xl font-bold text-green-500 mb-2">+64.2%</p>
+                        <p class="text-gray-400">Total Return</p>
+                    </div>
+                    <div class="stat-card p-5 text-center">
+                        <p class="text-3xl font-bold text-green-500 mb-2">76%</p>
+                        <p class="text-gray-400">Win Rate</p>
+                    </div>
+                    <div class="stat-card p-5 text-center">
+                        <p class="text-3xl font-bold text-red-500 mb-2">-12.3%</p>
+                        <p class="text-gray-400">Max Drawdown</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Reviews Tab (initially hidden) -->
+            <div class="tab-pane hidden" id="reviews">
+                <div class="card p-6 mb-6">
+                    <h3 class="text-xl font-semibold text-white mb-6">Customer Reviews</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="review-card pl-4 py-4">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <p class="font-medium text-white">Michael Chen</p>
+                                    <div class="rating-stars">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                    </div>
+                                </div>
+                                <span class="text-sm text-gray-400">2 weeks ago</span>
+                            </div>
+                            <p class="text-gray-300">This bot has consistently outperformed the market. The risk management is excellent - it protected my capital during the recent volatility.</p>
+                        </div>
+                        
+                        <div class="review-card pl-4 py-4">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <p class="font-medium text-white">Sarah Johnson</p>
+                                    <div class="rating-stars">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="far fa-star"></i>
+                                    </div>
+                                </div>
+                                <span class="text-sm text-gray-400">1 month ago</span>
+                            </div>
+                            <p class="text-gray-300">Good results overall, but I wish it had more customization options. The returns have been solid though.</p>
+                        </div>
+                        
+                        <div class="review-card pl-4 py-4">
+                            <div class="flex justify-between items-start mb-2">
+                                <div>
+                                    <p class="font-medium text-white">David Wilson</p>
+                                    <div class="rating-stars">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star-half-alt"></i>
+                                    </div>
+                                </div>
+                                <span class="text-sm text-gray-400">2 months ago</span>
+                            </div>
+                            <p class="text-gray-300">I've tried many bots, but this one stands out for its consistency. The developer provides excellent support and regular updates.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card p-6">
+                    <h3 class="text-xl font-semibold text-white mb-4">Add Your Review</h3>
+                    <textarea class="w-full bg-dark-700 border border-gray-700 text-white rounded-lg p-4 mb-4" rows="4" placeholder="Share your experience with this bot"></textarea>
+                    <div class="flex justify-between items-center">
+                        <div class="rating-stars text-2xl">
+                            <i class="far fa-star cursor-pointer"></i>
+                            <i class="far fa-star cursor-pointer"></i>
+                            <i class="far fa-star cursor-pointer"></i>
+                            <i class="far fa-star cursor-pointer"></i>
+                            <i class="far fa-star cursor-pointer"></i>
+                        </div>
+                        <button class="btn-primary py-2 px-6 rounded-lg">Submit Review</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Settings Tab (initially hidden) -->
+            <div class="tab-pane hidden" id="settings">
+                <div class="card p-6">
+                    <h3 class="text-xl font-semibold text-white mb-6">Bot Configuration</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Trade Amount (%)</label>
+                            <input type="range" min="1" max="10" value="2.5" step="0.5" class="w-full">
+                            <p class="text-right text-sm text-gray-400">2.5%</p>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Stop Loss (%)</label>
+                            <input type="range" min="1" max="20" value="5" step="1" class="w-full">
+                            <p class="text-right text-sm text-gray-400">5%</p>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Take Profit (%)</label>
+                            <input type="range" min="5" max="30" value="15" step="1" class="w-full">
+                            <p class="text-right text-sm text-gray-400">15%</p>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-300 mb-2">Trailing Stop</label>
+                            <div class="flex items-center">
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" class="sr-only peer" checked>
+                                    <div class="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                </label>
+                                <span class="ml-3 text-sm text-gray-300">Enabled</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn-primary py-3 px-6 rounded-lg">Save Configuration</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const id = urlParams.get('id');
+            
+            // Simulate fetch based on ID
+            let bot;
+            if (id === '1') {
+                bot = { 
+                    name: 'Trend Rider Pro', 
+                    description: 'Advanced trend following algorithm with machine learning adaptation. This bot identifies and rides market trends with sophisticated risk management techniques.', 
+                    price: 149,
+                    rating: 4.5,
+                    reviews: 128
+                };
+            } else if (id === '2') {
+                bot = { 
+                    name: 'Scalper Elite', 
+                    description: 'High-frequency scalping bot for quick market movements. Designed for short-term trades with tight stop losses.', 
+                    price: 199,
+                    rating: 4.6,
+                    reviews: 87
+                };
+            } else {
+                bot = { 
+                    name: 'Arbitrage Hunter', 
+                    description: 'Multi-exchange arbitrage bot with real-time opportunity detection. Capitalizes on price differences across exchanges.', 
+                    price: 299,
+                    rating: 4.9,
+                    reviews: 203
+                };
+            }
+            
+            document.getElementById('botName').textContent = bot.name;
+            document.getElementById('botDescription').textContent = bot.description;
+            document.getElementById('botPrice').textContent = '$' + bot.price;
+            
+            // Initialize performance chart
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            const performanceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'Portfolio Growth',
+                        data: [100, 115, 130, 125, 145, 160, 155, 170, 185, 200, 220, 240],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.3,
+                        pointBackgroundColor: '#3b82f6',
+                        pointRadius: 3,
+                        pointHoverRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            grid: {
+                                color: 'rgba(71, 85, 105, 0.3)'
+                            },
+                            ticks: {
+                                color: 'rgba(156, 163, 175, 1)',
+                                callback: function(value) {
+                                    return '$' + value;
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(71, 85, 105, 0.3)'
+                            },
+                            ticks: {
+                                color: 'rgba(156, 163, 175, 1)'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Tab functionality
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    document.querySelectorAll('.tab-button').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    
+                    // Hide all tab panes
+                    document.querySelectorAll('.tab-pane').forEach(pane => {
+                        pane.classList.add('hidden');
+                        pane.classList.remove('active');
+                    });
+                    
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+                    
+                    // Show corresponding tab pane
+                    const tabName = this.getAttribute('data-tab');
+                    document.getElementById(tabName).classList.remove('hidden');
+                    document.getElementById(tabName).classList.add('active');
+                });
+            });
+            
+            // Star rating functionality for review
+            const stars = document.querySelectorAll('#reviews .rating-stars .fa-star');
+            stars.forEach(star => {
+                star.addEventListener('click', function() {
+                    const rating = this.getAttribute('data-rating') || 
+                                  Array.from(stars).indexOf(this) + 1;
+                    
+                    stars.forEach((s, index) => {
+                        if (index < rating) {
+                            s.classList.remove('far');
+                            s.classList.add('fas');
+                        } else {
+                            s.classList.remove('fas');
+                            s.classList.add('far');
+                        }
+                    });
+                });
+            });
+        });
+
+        function buyBot() {
+            // Simulate purchase process
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg animate-fade-in bg-green-500 text-white';
+            notification.textContent = 'Bot purchased successfully! Redirecting to dashboard...';
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+                window.location.href = 'dashboard.html';
+            }, 2000);
+        }
+
+        function sellBot() {
+            // Simulate selling process
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg animate-fade-in bg-blue-500 text-white';
+            notification.textContent = 'Your bot has been listed for sale!';
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
