@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Bot - AlgoCDK</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/codemirror.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/mode/javascript/javascript.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.2/theme/dracula.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    colors: {
+                        dark: {
+                            900: '#0f172a',
+                            800: '#1e293b',
+                            700: '#334155',
+                        },
+                        primary: {
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%233b82f6' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+            opacity: 0.5;
+            z-index: -1;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 25%, #6366f1 50%, #8b5cf6 75%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: gradientMove 5s ease infinite;
+        }
+        
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .sidebar {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(56, 66, 85, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item {
+            position: relative;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+        }
+        
+        .nav-item:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .nav-item.active {
+            background: rgba(59, 130, 246, 0.2);
+        }
+        
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 60%;
+            width: 4px;
+            background: linear-gradient(to bottom, #3b82f6, #6366f1);
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .input-field {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(71, 85, 105, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+        
+        .input-field:hover {
+            border-color: rgba(71, 85, 105, 0.8);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(71, 85, 105, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+        }
+        
+        .strategy-card {
+            transition: all 0.3s ease;
+            border: 1px solid rgba(71, 85, 105, 0.3);
+        }
+        
+        .strategy-card:hover {
+            border-color: #3b82f6;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px -5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .strategy-card.selected {
+            border-color: #3b82f6;
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .tab-button {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .tab-button.active {
+            border-bottom-color: #3b82f6;
+            color: white;
+        }
+        
+        .CodeMirror {
+            height: 300px;
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+        }
+        
+        .step-indicator {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: rgba(59, 130, 246, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .step-indicator.active {
+            background: rgba(59, 130, 246, 0.2);
+            color: white;
+        }
+        
+        .step-indicator.completed {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .param-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 5px;
+            border-radius: 5px;
+            background: rgba(71, 85, 105, 0.5);
+            outline: none;
+        }
+        
+        .param-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #3b82f6;
+            cursor: pointer;
+        }
+        
+        .preview-bot {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(30, 41, 59, 0.9));
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+    </style>
+</head>
+<body class="flex">
+    <!-- Sidebar -->
+    <aside class="sidebar w-64 p-6 h-screen sticky top-0 hidden md:block">
+        <div class="flex items-center mb-10">
+            <h1 class="text-2xl font-bold gradient-text">AlgoCDK</h1>
+        </div>
+        
+        <div class="mb-8 flex items-center p-3 bg-dark-700/30 rounded-lg">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold mr-3">JD</div>
+            <div>
+                <p class="font-medium text-white">John Doe</p>
+                <p class="text-xs text-gray-400">Pro Trader</p>
+            </div>
+        </div>
+        
+        <ul class="space-y-2">
+            <li><a href="dashboard.html" class="nav-item flex items-center p-3 text-gray-400 hover:text-white"><i class="fas fa-chart-pie mr-3 w-5"></i> Dashboard</a></li>
+            <li><a href="create-bot.html" class="nav-item active flex items-center p-3 text-white"><i class="fas fa-robot mr-3 w-5"></i> Create Bot</a></li>
+            <li><a href="marketplace.html" class="nav-item flex items-center p-3 text-gray-400 hover:text-white"><i class="fas fa-store mr-3 w-5"></i> Marketplace</a></li>
+            <li><a href="analysis.html" class="nav-item flex items-center p-3 text-gray-400 hover:text-white"><i class="fas fa-chart-line mr-3 w-5"></i> Analysis</a></li>
+            <li><a href="community.html" class="nav-item flex items-center p-3 text-gray-400 hover:text-white"><i class="fas fa-users mr-3 w-5"></i> Community</a></li>
+            <li><a href="profile.html" class="nav-item flex items-center p-3 text-gray-400 hover:text-white"><i class="fas fa-user mr-3 w-5"></i> Profile</a></li>
+            <li><a href="settings.html" class="nav-item flex items-center p-3 text-gray-400 hover:text-white"><i class="fas fa-cog mr-3 w-5"></i> Settings</a></li>
+            <li><a href="index.html" onclick="logout()" class="nav-item flex items-center p-3 text-gray-400 hover:text-white"><i class="fas fa-sign-out-alt mr-3 w-5"></i> Logout</a></li>
+        </ul>
+        
+        <div class="mt-10 p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-lg border border-blue-500/20">
+            <h3 class="font-semibold text-white mb-2">Need help?</h3>
+            <p class="text-xs text-gray-400 mb-3">Check our bot creation guide</p>
+            <button class="btn-secondary text-xs py-2 px-4 rounded-lg w-full">View Documentation</button>
+        </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="flex-1 p-6 overflow-auto">
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-8">
+            <div>
+                <h2 class="text-3xl font-bold text-white">Create Trading Bot</h2>
+                <p class="text-gray-400">Build and customize your algorithmic trading strategy</p>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <button class="btn-secondary py-2 px-4 rounded-lg flex items-center">
+                    <i class="fas fa-save mr-2"></i> Save Draft
+                </button>
+                
+                <button class="md:hidden text-gray-400 hover:text-white">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </header>
+        
+        <!-- Creation Steps -->
+        <div class="flex mb-8 overflow-x-auto pb-2">
+            <div class="flex items-center mr-6">
+                <div class="step-indicator completed">1</div>
+                <span class="text-sm whitespace-nowrap">Strategy</span>
+            </div>
+            <div class="flex items-center mr-6">
+                <div class="step-indicator active">2</div>
+                <span class="text-sm whitespace-nowrap">Parameters</span>
+            </div>
+            <div class="flex items-center mr-6">
+                <div class="step-indicator">3</div>
+                <span class="text-sm whitespace-nowrap">Code</span>
+            </div>
+            <div class="flex items-center">
+                <div class="step-indicator">4</div>
+                <span class="text-sm whitespace-nowrap">Review</span>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Bot Parameters Form -->
+            <div class="card p-6 col-span-2">
+                <h3 class="text-xl font-semibold text-white mb-6">Bot Configuration</h3>
+                
+                <div class="mb-6">
+                    <label for="botName" class="block text-sm font-medium text-gray-300 mb-2">Bot Name</label>
+                    <input type="text" id="botName" class="input-field w-full px-4 py-3 rounded-lg text-white focus:outline-none" placeholder="e.g., Trend Rider BTC" value="Trend Rider BTC">
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Trading Pair</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <select class="input-field w-full px-4 py-3 rounded-lg text-white focus:outline-none">
+                            <option>BTC</option>
+                            <option>ETH</option>
+                            <option>XRP</option>
+                            <option>LTC</option>
+                        </select>
+                        <select class="input-field w-full px-4 py-3 rounded-lg text-white focus:outline-none">
+                            <option>USD</option>
+                            <option>EUR</option>
+                            <option>USDT</option>
+                            <option>BTC</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Strategy Parameters</label>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm text-gray-400">Fast EMA Period</span>
+                                <span class="text-sm text-white" id="fastEmaValue">12</span>
+                            </div>
+                            <input type="range" min="5" max="50" value="12" class="param-slider" id="fastEma">
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm text-gray-400">Slow EMA Period</span>
+                                <span class="text-sm text-white" id="slowEmaValue">26</span>
+                            </div>
+                            <input type="range" min="10" max="100" value="26" class="param-slider" id="slowEma">
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm text-gray-400">Signal Period</span>
+                                <span class="text-sm text-white" id="signalValue">9</span>
+                            </div>
+                            <input type="range" min="5" max="30" value="9" class="param-slider" id="signalPeriod">
+                        </div>
+                        
+                        <div>
+                            <div class="flex justify-between mb-1">
+                                <span class="text-sm text-gray-400">Trade Amount (%)</span>
+                                <span class="text-sm text-white" id="tradeAmountValue">2.5%</span>
+                            </div>
+                            <input type="range" min="1" max="10" value="2.5" step="0.5" class="param-slider" id="tradeAmount">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Risk Management</label>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-xs text-gray-400 mb-1 block">Stop Loss (%)</label>
+                            <input type="number" class="input-field w-full px-4 py-2 rounded-lg text-white focus:outline-none" value="5">
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-400 mb-1 block">Take Profit (%)</label>
+                            <input type="number" class="input-field w-full px-4 py-2 rounded-lg text-white focus:outline-none" value="15">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex justify-between mt-8">
+                    <button class="btn-secondary py-3 px-6 rounded-lg flex items-center">
+                        <i class="fas fa-arrow-left mr-2"></i> Back
+                    </button>
+                    <button class="btn-primary py-3 px-6 rounded-lg flex items-center" onclick="goToCodeStep()">
+                        Next: Code Editor <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Strategy Preview -->
+            <div class="col-span-1">
+                <div class="card p-6 mb-6">
+                    <h3 class="text-xl font-semibold text-white mb-4">Strategy Preview</h3>
+                    
+                    <div class="preview-bot p-4 mb-4">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="font-medium text-white" id="previewBotName">Trend Rider BTC</h4>
+                            <span class="text-xs bg-green-500/20 text-green-500 px-2 py-1 rounded-full">EMA Crossover</span>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-3 text-xs">
+                            <div>
+                                <p class="text-gray-400">Pair</p>
+                                <p class="text-white">BTC/USD</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-400">Timeframe</p>
+                                <p class="text-white">1h</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-400">Fast EMA</p>
+                                <p class="text-white" id="previewFastEma">12</p>
+                            </div>
+                            <div>
+                                <p class="text-gray-400">Slow EMA</p>
+                                <p class="text-white" id="previewSlowEma">26</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-dark-700/30 rounded-lg p-4">
+                        <h4 class="text-sm font-medium text-white mb-2">Strategy Description</h4>
+                        <p class="text-xs text-gray-400">This strategy uses Exponential Moving Average (EMA) crossovers to identify trend changes. It buys when the fast EMA crosses above the slow EMA and sells when the fast EMA crosses below the slow EMA.</p>
+                    </div>
+                </div>
+                
+                <div class="card p-6">
+                    <h3 class="text-xl font-semibold text-white mb-4">Popular Strategies</h3>
+                    
+                    <div class="space-y-3">
+                        <div class="strategy-card p-3 rounded-lg cursor-pointer">
+                            <h4 class="font-medium text-white">RSI Divergence</h4>
+                            <p class="text-xs text-gray-400">Identifies overbought/oversold conditions with RSI indicator</p>
+                        </div>
+                        
+                        <div class="strategy-card p-3 rounded-lg cursor-pointer">
+                            <h4 class="font-medium text-white">Bollinger Bands</h4>
+                            <p class="text-xs text-gray-400">Uses volatility bands to identify potential breakouts</p>
+                        </div>
+                        
+                        <div class="strategy-card p-3 rounded-lg cursor-pointer">
+                            <h4 class="font-medium text-white">Mean Reversion</h4>
+                            <p class="text-xs text-gray-400">Capitalizes on price returning to its average value</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        // Initialize CodeMirror editor
+        let editor;
+        document.addEventListener('DOMContentLoaded', function() {
+            editor = CodeMirror.fromTextArea(document.getElementById('botCode'), {
+                mode: "javascript",
+                theme: "dracula",
+                lineNumbers: true,
+                indentUnit: 4,
+                autoCloseBrackets: true,
+                matchBrackets: true,
+                lineWrapping: true
+            });
+            
+            // Set default code
+            editor.setValue(`// EMA Crossover Strategy
+function onTick() {
+    // Get EMA values
+    const fastEMA = ema(periods.fast);
+    const slowEMA = ema(periods.slow);
+    
+    // Trading logic
+    if (fastEMA > slowEMA) {
+        // Buy signal
+        buy();
+    } else if (fastEMA < slowEMA) {
+        // Sell signal
+        sell();
+    }
+    
+    // Risk management
+    checkStopLoss();
+    checkTakeProfit();
+}`);
+        });
+        
+        // Update parameter values in real-time
+        document.getElementById('fastEma').addEventListener('input', function() {
+            document.getElementById('fastEmaValue').textContent = this.value;
+            document.getElementById('previewFastEma').textContent = this.value;
+        });
+        
+        document.getElementById('slowEma').addEventListener('input', function() {
+            document.getElementById('slowEmaValue').textContent = this.value;
+            document.getElementById('previewSlowEma').textContent = this.value;
+        });
+        
+        document.getElementById('signalPeriod').addEventListener('input', function() {
+            document.getElementById('signalValue').textContent = this.value;
+        });
+        
+        document.getElementById('tradeAmount').addEventListener('input', function() {
+            document.getElementById('tradeAmountValue').textContent = this.value + '%';
+        });
+        
+        document.getElementById('botName').addEventListener('input', function() {
+            document.getElementById('previewBotName').textContent = this.value;
+        });
+        
+        function createBot() {
+            const name = document.getElementById('botName').value;
+            const code = editor.getValue();
+            
+            // Validate inputs
+            if (!name) {
+                showNotification('Please enter a bot name', 'error');
+                return;
+            }
+            
+            if (!code) {
+                showNotification('Please write some code for your bot', 'error');
+                return;
+            }
+            
+            // Simulate API call
+            showNotification('Bot created successfully!', 'success');
+            
+            // Redirect after a short delay
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 1500);
+        }
+        
+        function goToCodeStep() {
+            // In a real app, this would navigate to the code step
+            showNotification('Moving to code editor...', 'info');
+            
+            // Scroll to code section (simulated)
+            document.querySelector('main').scrollTo(0, 600);
+        }
+        
+        function showNotification(message, type) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg animate-fade-in ${
+                type === 'success' ? 'bg-green-500' : 
+                type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+            } text-white`;
+            notification.textContent = message;
+            
+            // Add to page
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+        
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+        
+        // Add event listeners to strategy cards
+        document.querySelectorAll('.strategy-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.strategy-card').forEach(c => {
+                    c.classList.remove('selected');
+                });
+                this.classList.add('selected');
+                
+                showNotification('Strategy selected: ' + this.querySelector('h4').textContent, 'info');
+            });
+        });
+    </script>
+    
+    <textarea id="botCode" class="hidden"></textarea>
+</body>
+</html>
