@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community - AlgoCDK</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    colors: {
+                        dark: {
+                            900: '#0f172a',
+                            800: '#1e293b',
+                            700: '#334155',
+                        },
+                        primary: {
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 极%, #1e293b 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134极7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-极-7 3.134-7 7 3.134 7 7 7极m-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 极.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22极c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%233b82f6' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+            opacity: 0.5;
+            z-index: -1;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 25%, #6366f1 50%, #8b5cf6 75%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: gradientMove 5s ease infinite;
+        }
+        
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .sidebar {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(56, 66, 85, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item {
+            position: relative;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+        }
+        
+        .nav-item:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .nav-item.active {
+            background: rgba(59, 130, 246, 0.2);
+        }
+        
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 60%;
+            width: 4px;
+            background: linear-gradient(to bottom, #3b82f6, #6366f1);
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            border-color: rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6极 12px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(71, 85, 105, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+        }
+        
+        .forum-card {
+            transition: all 0.3s ease;
+        }
+        
+        .forum-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px -5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .tag {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            border-radius: 20px;
+            padding: 2px 8px;
+            font-size: 0.75rem;
+        }
+        
+        .tab-button {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .tab-button.active {
+            border-bottom-color: #3b82f6;
+            color: white;
+        }
+        
+        .notification-dot {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 8px;
+            height: 8px;
+            background: #ef4444;
+            border-radius: 50%;
+        }
+        
+        .search-input {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(30, 41, 59, 0.9));
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px -5px rgba(0, 0, 0, 0.2);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+    </style>
+</head>
+<body class="flex">
+    <!-- Sidebar -->
+    <aside class="sidebar w-64 p-6 h-screen sticky top-0 hidden md:block">
+        <div class="flex items-center mb-10">
+            <h1 class="text-2xl font-bold gradient-text">AlgoCDK</h1>
+        </div>
+        
+        <div class="mb-8 flex items-center p-3 bg-dark-700/30 rounded-lg">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold mr-3">JD</div>
+            <div>
+                <p class="font-medium text-white">John Doe</p>
+                <p class="text-xs text-gray-400">Pro Trader</p>
+            </div>
+        </div>
+        
+        <ul class="space-y-2">
+            <li><a href="dashboard.html" class="nav-item flex items-center p-3 text-gray-400 hover:text-white"><i class="fas fa-chart-pie mr-3 w-5"></i> Dashboard</a></li>
+            <li><a href="create-bot.html" class极nav-item flex items-center p-3 text-gray-400 hover:text-white"><i class="fas fa-robot mr-3 w-5"></i> Create Bot</a></li>
+            <li><a href="marketplace.html" class="nav-item flex items-center p-3 text-gray-400 hover:text-white"><i class="fas fa-store mr-3 w-5"></i> Marketplace</a></li>
+            <li><a href="analysis.html" class="nav-item flex items-center p-3 text-gray-400 hover:text-white"><i class="fas fa-chart-line mr-3 w-5"></i> Analysis</a></li>
+            <li><a href="community.html" class="nav-item active flex items-center p-3 text-white"><i class="fas fa-users mr-3 w-5"></i> Community</a></li>
+            <li><a href="profile.html" class="nav-item flex items-center p-3 text-gray-400 hover:text-white"><i class="fas fa-user mr-3 w-5"></i> Profile</a></li>
+            <li><a href="settings.html" class="nav-item flex items-center p-3 text-gray-400 hover:text-white"><i class="fas fa-cog mr-3 w-5"></i> Settings</a></li>
+            <li><a href="index.html" onclick="logout()" class="nav-item flex items-center p-3 text-gray-400 hover:text-white"><i class="fas fa-sign-out-alt mr-3 w-5"></i> Logout</a></li>
+        </ul>
+        
+        <div class="mt-10 p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-lg border border-blue-500/20">
+            <h3 class="font-semibold text-white mb-2">Community Stats</h3>
+            <p class="text-xs text-gray-400 mb-1">12,345 active traders</p>
+            <p class="text-xs text-gray-400">3,452 online now</p>
+        </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="flex-1 p-6 overflow-auto">
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-8">
+            <div>
+                <h2 class="text-3xl font-bold text-white">Trading Community</h2>
+                <p class="text-gray-400">Connect with fellow algorithmic traders</p>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <input type="text" placeholder="Search discussions..." class="search-input py-2 px-4 rounded-lg text-white pl-10 w-64">
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-500"></i>
+                </div>
+                
+                <div class="relative">
+                    <button class="w-10 h-10 rounded-full bg-dark-700 flex items-center justify-center text-gray-400 hover:text-white">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-dot"></span>
+                    </button>
+                </div>
+                
+                <button class="md:hidden text-gray-400 hover:text-white">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </header>
+        
+        <!-- Community Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <div class="stat-card p-4 text-center">
+                <p class="text-3xl font-bold text-white">2,458</p>
+                <p class="text-sm text-gray-400">Total Posts</p>
+            </div>
+            
+            <div class="stat-card p-4 text-center">
+                <p class="text-3xl font-bold text-white">1,237</p>
+                <p class="text-sm text-gray-400">Total Threads</p>
+            </div>
+            
+            <div class="stat-card p-4 text-center">
+                <p class="text-3xl font-bold text-white">345</p>
+                <p class="text-sm text-gray-400">Online Users</p>
+            </div>
+            
+            <div class="stat-card p-4 text-center">
+                <p class="text-3xl font-bold text-white">12</p>
+                <p class="text-sm text-gray-400">New Today</p>
+            </div>
+        </div>
+        
+        <!-- Community Tabs -->
+        <div class="flex border-b border-gray-700 mb-6">
+            <button class="tab-button py-3 px-6 mr-4 active" data-tab="all">All Discussions</button>
+            <button class="tab-button py-3 px-6 mr-4" data-tab="popular">Popular</button>
+            <button class="tab-button py-3 px-6 mr-4" data-tab="unanswered">Unanswered</button>
+            <button class="tab-button py-3 px-6" data-tab="following">Following</button>
+        </div>
+        
+        <!-- Create Post Button -->
+        <div class="flex justify-between items-center mb-6">
+            <a href="thread.html" class="btn-primary py-3 px-6 rounded-lg flex items-center">
+                <i class="fas fa-plus-circle mr-2"></i> New Discussion
+            </a>
+            
+            <select class="bg-dark-700 border border-gray-700 text-white text-sm rounded-lg px-3 py-2">
+                <option>Newest First</option>
+                <option>Most Popular</option>
+                <option>Most Replies</option>
+            </select>
+        </div>
+        
+        <!-- Discussion List -->
+        <div class="space-y-4" id="postsList">
+            <!-- Posts will be dynamically added here -->
+        </div>
+        
+        <!-- Popular Topics Section -->
+        <div class="card p-6 mt-8">
+            <h3 class="text-xl font-semibold text-white mb-4">Popular Topics</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-dark-700/30 p-4 rounded-lg">
+                    <div class="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center mb-3">
+                        <i class="fas fa-robot text-blue-500"></i>
+                    </div>
+                    <p class="font-medium text-white">Bot Strategies</p>
+                    <p class="text-xs text-gray-400">324 discussions</p>
+                </div>
+                
+                <div class="bg-dark-700/30 p-4 rounded-lg">
+                    <div class="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center mb-3">
+                        <i class="fas fa-chart-line text-green-500"></i>
+                    </div>
+                    <p class="font-medium text-white">Market Analysis</p>
+                    <p class="text-xs text-gray-400">287 discussions</p>
+                </div>
+                
+                <div class="bg-dark-700/30 p-4 rounded-lg">
+                    <div class="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center mb-3">
+                        <i class="fas fa-code text-purple-500"></i>
+                    </div>
+                    <p class="font-medium text-white">API & Coding</p>
+                    <p class="text-xs text-gray-400">156 discussions</p>
+                </div>
+                
+                <div class="bg-dark-700/30 p-4 rounded-lg">
+                    <div class="w-10 h-10 rounded-full bg-yellow-500/10 flex items-center justify-center mb-3">
+                        <i class="fas fa-graduation-cap text-yellow-500"></i>
+                    </div>
+                    <p class="font-medium text-white">Beginner Help</p>
+                    <p class="text-xs text-gray-400">203 discussions</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Top Contributors -->
+        <div class="card p-6 mt-8">
+            <h3 class="text-xl font-semibold text-white mb-4">Top Contributors</h3>
+            
+            <div class="space-y-4">
+                <div class="flex items-center justify-between p-3 bg-dark-700/30 rounded-lg">
+                    <div class="flex items-center">
+                        <div class="user-avatar bg-gradient-to-r from-blue-500 to-purple-500 text-white mr-3">CT</div>
+                        <div>
+                            <p class="font-medium text-white">CryptoTrader</p>
+                            <p class="text-xs text-gray-400">Bot Development Expert</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm font-medium text-white">1,243 posts</p>
+                        <p class="text-xs text-green-500">+25 today</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between p-3 bg-dark-700/30 rounded-lg">
+                    <div class="flex items-center">
+                        <div class="user-avatar bg-gradient-to-r from-green-500 to-teal-500 text-white mr-3">AA</div>
+                        <div>
+                            <p class="font-medium text-white">AlgoAnalyst</p>
+                            <p class="text-xs text-gray-400">Market Analyst</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm font-medium text-white">987 posts</p>
+                        <p class="text-xs text-green-500">+12 today</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between p-3 bg-dark-700/30 rounded-lg">
+                    <div class="极flex items-center">
+                        <div class="user-avatar bg-gradient-to-r from-purple-500 to-pink-500 text-white mr-3">DS</div>
+                        <div>
+                            <p class="font-medium text-white">DataScientist</p>
+                            <p class="text-xs text-gray-400">Quantitative Analyst</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm font-medium text-white">756 posts</p>
+                        <p class="text-xs text-green-500">+8 today</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const posts = [
+                { 
+                    id: 1, 
+                    title: 'Best EMA Settings for Trend Following', 
+                    content: 'I\'ve been testing various EMA combinations for trend following strategies. The 12-26-9 combination seems to work well for 1H timeframe, but I\'m curious what others are using...', 
+                    author: 'CryptoTrader',
+                    authorInitials: 'CT',
+                    replies: 24,
+                    views: 143,
+                    likes: 17,
+                    date: '2 hours ago',
+                    tags: ['Strategy', 'Indicators'],
+                    solved: true
+                },
+                { 
+                    id: 2, 
+                    title: 'Python API Integration Examples', 
+                    content: 'I created a comprehensive guide for integrating with Deriv API using Python. This includes examples for placing trades, reading market data, and managing your account programmatically...', 
+                    author: 'CodeMaster',
+                    authorInitials: 'CM',
+                    replies: 16,
+                    views: 98,
+                    likes: 22,
+                    date: '5 hours ago',
+                    tags: ['API', 'Python'],
+                    solved: false
+                },
+                { 
+                    id: 3, 
+                    title: 'Volatility Patterns During News Events', 
+                    content: 'I\'ve been analyzing how major news events affect volatility in forex markets. There are clear patterns that can be exploited with the right bot configuration. Here are my findings...', 
+                    author: 'MarketAnalyst',
+                    authorInitials: 'MA',
+                    replies: 32,
+                    views: 210,
+                    likes: 45,
+                    date: 'Yesterday',
+                    tags: ['Analysis', 'Forex'],
+                    solved: true
+                },
+                { 
+                    id: 4, 
+                    title: 'Beginner Question: How to Backtest Strategies?', 
+                    content: 'I\'m new to algorithmic trading and want to learn how to properly backtest my strategies before going live. What tools and approaches would you recommend for someone just starting out?', 
+                    author: 'NewTrader',
+                    authorInitials: 'NT',
+                    replies: 19,
+                    views: 124,
+                    likes: 8,
+                    date: '2 days ago',
+                    tags: ['Help', 'Education'],
+                    solved: false
+                },
+                { 
+                    id: 5, 
+                    title: 'Machine Learning for Price Prediction', 
+                    content: 'I\'ve been experimenting with LSTM networks for price prediction on crypto markets. The initial results are promising with 62% accuracy on 15-minute forecasts. Anyone else working on ML approaches?', 
+                    author: 'DataScientist',
+                    authorInitials: 'DS',
+                    replies: 41,
+                    views: 287,
+                    likes: 63,
+                    date: '3 days ago',
+                    tags: ['AI', 'Crypto'],
+                    solved: false
+                }
+            ];
+            
+            const list = document.getElementById('postsList');
+            
+            // Render posts
+            posts.forEach(post => {
+                const card = document.createElement('div');
+                card.className = 'card p-6 forum-card animate-fade-in';
+                card.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="flex items-center">
+                            <div class="user-avatar bg-gradient-to-r from-blue-500 to-purple-500 text-white mr-3">${post.authorInitials}</div>
+                            <div>
+                                <p class="font-medium text-white">${post.author}</p>
+                                <p class="text-xs text-gray-400">${post.date}</p>
+                            </div>
+                        </div>
+                        ${post.solved ? '<span class="tag bg-green-500/20 text-green-500"><i class="fas fa-check-circle mr-1"></i> Solved</span>' : '<span class="tag bg-blue-500/20 text-blue-500">Active</span>'}
+                    </div>
+                    
+                    <h3 class="text-xl font-semibold text-white mb-2">${post.title}</h3>
+                    <p class="text-gray-300 mb-4">${post.content}</p>
+                    
+                    <div class="flex justify-between items-center">
+                        <div class="flex space-x-2">
+                            ${post.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>
+                        
+                        <div class="flex items-center space-x-4 text-sm text-gray-400">
+                            <span><i class="far fa-comment mr-1"></i> ${post.replies}</span>
+                            <span><i class="far fa-eye mr-1"></i> ${post.views}</span>
+                            <span><i class="far fa-heart mr-1"></i> ${post.likes}</span>
+                        </div>
+                    </div>
+                `;
+                list.appendChild(card);
+            });
+            
+            // Tab functionality
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    document.querySelectorAll('.tab-button').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // In a real app, this would filter the discussions
+                    const tab = this.getAttribute('data-tab');
+                    showNotification(`Showing ${tab} discussions`);
+                });
+            });
+            
+            // Add event listener to search input
+            document.querySelector('.search-input').addEventListener('keyup', function(e) {
+                if (e.key === 'Enter') {
+                    showNotification(`Searching for: ${this.value}`);
+                }
+            });
+        });
+        
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'fixed bottom-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg animate-fade-in bg-dark-700 border border-gray-600 text-white';
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+        
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
