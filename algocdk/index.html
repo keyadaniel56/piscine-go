@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlgoCDK - Algorithmic Trading Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    colors: {
+                        dark: {
+                            900: '#0f172a',
+                            800: '#1e293b',
+                            700: '#334155',
+                        },
+                        primary: {
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%233b82f6' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+            opacity: 0.5;
+            z-index: -1;
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 25%, #6366f1 50%, #8b5cf6 75%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: gradientMove 5s ease infinite;
+        }
+        
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .nav-link {
+            position: relative;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background-color: #3b82f6;
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+        }
+        
+        .cta-button {
+            background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+            box-shadow: 0 4px 15px 0 rgba(59, 130, 246, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .cta-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px 0 rgba(59, 130, 246, 0.5);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+    <header class="bg-dark-800/80 backdrop-blur-md py-4 sticky top-0 z-10 border-b border-blue-500/10">
+        <nav class="container mx-auto flex justify-between items-center px-4 md:px-8">
+            <div class="flex items-center">
+                <h1 class="text-2xl md:text-3xl font-bold tracking-tight">
+                    <span class="gradient-text">AlgoCDK</span>
+                </h1>
+            </div>
+            <ul class="flex space-x-4 md:space-x-8 text-sm md:text-base">
+                <li><a href="login.html" class="nav-link text-gray-300 hover:text-white transition">Login</a></li>
+                <li><a href="register.html" class="nav-link text-gray-300 hover:text-white transition">Register</a></li>
+                <li><a href="about.html" class="nav-link text-gray-300 hover:text-white transition">About</a></li>
+                <li><a href="contact.html" class="nav-link text-gray-300 hover:text-white transition">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main class="flex-grow container mx-auto py-12 px-4 md:px-8">
+        <section class="text-center mb-16 md:mb-20">
+            <h2 class="text-4xl md:text-6xl font-extrabold mb-6">
+                <span class="gradient-text">Algorithmic Trading</span> <span class="text-white">Perfected</span>
+            </h2>
+            <p class="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto mb-8">
+                Join a vibrant community of Deriv traders to create, trade, and analyze algorithmic trading bots with ease.
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="register.html" class="cta-button px-8 py-4 rounded-full text-white font-semibold shadow-lg">
+                    Get Started Free <i class="ml-2 fas fa-arrow-right"></i>
+                </a>
+                <a href="#features" class="px-8 py-4 rounded-full border border-primary-500/30 text-white font-semibold hover:bg-primary-500/10 transition">
+                    Learn More
+                </a>
+            </div>
+        </section>
+        
+        <section id="features" class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            <div class="bg-dark-800/50 p-8 rounded-2xl border border-gray-700/30 card-hover">
+                <div class="feature-icon mx-auto">
+                    <i class="fas fa-robot text-2xl text-white"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-4 text-center">Create Bots</h3>
+                <p class="text-gray-400 text-center">Design and deploy your own trading algorithms with our intuitive visual editor or code directly in Python.</p>
+            </div>
+            
+            <div class="bg-dark-800/50 p-8 rounded-2xl border border-gray-700/30 card-hover">
+                <div class="feature-icon mx-auto">
+                    <i class="fas fa-store text-2xl text-white"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-4 text-center">Marketplace</h3>
+                <p class="text-gray-400 text-center">Buy and sell proven trading bots with other traders in our secure marketplace. Earn from your strategies.</p>
+            </div>
+            
+            <div class="bg-dark-800/50 p-8 rounded-2xl border border-gray-700/30 card-hover">
+                <div class="feature-icon mx-auto">
+                    <i class="fas fa-chart-line text-2xl text-white"></i>
+                </div>
+                <h3 class="text-xl font-semibold mb-4 text-center">Advanced Analysis</h3>
+                <p class="text-gray-400 text-center">Powerful tools for Deriv market insights, backtesting, and performance analytics to optimize your strategies.</p>
+            </div>
+        </section>
+        
+        <section class="bg-gradient-to-r from-primary-500/10 to-purple-500/10 p-8 md:p-12 rounded-2xl border border-primary-500/20 mb-16">
+            <div class="max-w-4xl mx-auto text-center">
+                <h3 class="text-2xl md:text-3xl font-bold mb-6">Ready to transform your trading?</h3>
+                <p class="text-gray-300 mb-8">Join thousands of successful traders who use AlgoCDK to automate their strategies and maximize profits.</p>
+                <a href="register.html" class="cta-button inline-block px-8 py-4 rounded-full text-white font-semibold">
+                    Create Your Account Now
+                </a>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="bg-dark-800/80 py-8 text-center border-t border-gray-700/20">
+        <div class="container mx-auto px-4">
+            <p class="text-gray-400 mb-4">&copy; 2025 AlgoCDK. All rights reserved.</p>
+            <div class="flex justify-center space-x-6">
+                <a href="terms.html" class="text-gray-400 hover:text-white transition">Terms of Service</a>
+                <a href="privacy.html" class="text-gray-400 hover:text-white transition">Privacy Policy</a>
+                <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-discord"></i></a>
+                <a href="#" class="text-gray-400 hover:text-white transition"><i class="fab fa-telegram"></i></a>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('AlgoCDK Home Loaded');
+            
+            // Animate elements on scroll
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate-fade-in');
+                    }
+                });
+            }, observerOptions);
+            
+            document.querySelectorAll('.card-hover').forEach(card => {
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>
