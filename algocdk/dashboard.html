@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - AlgoCDK</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    colors: {
+                        dark: {
+                            900: '#0f172a',
+                            800: '#1e293b',
+                            700: '#334155',
+                        },
+                        primary: {
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        },
+                        success: '#10b981',
+                        danger: '#ef4444',
+                        warning: '#f59e0b'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%233b82f6' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+            opacity: 0.5;
+            z-index: -1;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 25%, #6366f1 50%, #8b5cf6 75%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: gradientMove 5s ease infinite;
+        }
+        
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .sidebar {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(56, 66, 85, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item {
+            position: relative;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+        }
+        
+        .nav-item:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .nav-item.active {
+            background: rgba(59, 130, 246, 0.2);
+        }
+        
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 60%;
+            width: 4px;
+            background: linear-gradient(to bottom, #3b82f6, #6366f1);
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            border-color: rgba(59, 130, 246, 0.4);
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(30, 41, 59, 0.9));
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px -5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .bot-status-active {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(16, 185, 129, 0.1));
+            border-left: 4px solid #10b981;
+        }
+        
+        .bot-status-paused {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.15), rgba(245, 158, 11, 0.1));
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .bot-status-stopped {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(239, 68, 68, 0.1));
+            border-left: 4px solid #ef4444;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(59, 130, 246, 0.4);
+        }
+        
+        .activity-item {
+            border-left: 3px solid #3b82f6;
+            transition: all 0.3s ease;
+        }
+        
+        .activity-item:hover {
+            background: rgba(30, 41, 59, 0.5);
+            transform: translateX(5px);
+        }
+        
+        .notification-dot {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 8px;
+            height: 8px;
+            background: #ef4444;
+            border-radius: 50%;
+        }
+        
+        .search-input {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+        }
+        
+        .profit-positive {
+            color: #10b981;
+        }
+        
+        .profit-negative {
+            color: #ef4444;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 250px;
+            width: 100%;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+    </style>
+</head>
+<body class="flex">
+    <!-- Sidebar -->
+    <aside class="sidebar w-64 p-6 h-screen sticky top-0 hidden md:block">
+        <div class="flex items-center mb-10">
+            <h1 class="text-2xl font-bold gradient-text">AlgoCDK</h1>
+        </div>
+        
+        <div class="mb-8 flex items-center p-3 bg-dark-700/30 rounded-lg">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold mr-3">JD</div>
+            <div>
+                <p class="font-medium text-white">John Doe</p>
+                <p class="text-xs text-gray-400">Pro Trader</p>
+            </div>
+        </div>
+        
+        <ul class="space-y-2">
+            <li><a href="dashboard.html" class="nav-item active flex items-center p-3 text-white"><i class="fas fa-chart-pie mr-3 w-5"></i> Dashboard</a></li>
+            <li><a href="create-bot.html" class="nav-item flex items-center p-3 text-gray-400 hover:text-white"><i class="fas fa-robot mr-3 w-5"></i> Create Bot</a></li>
+            <li><a href="marketplace.html" class="nav-item flex items-center p-3 text-gray-400 hover:text-white"><i class="fas fa-store mr-3 w-5"></i> Marketplace</a></li>
+            <li><a href="analysis.html" class="nav-item flex items-center p-3 text-gray-400 hover:text-white"><i class="fas fa-chart-line mr-3 w-5"></i> Analysis</a></li>
+            <li><a href="community.html" class="nav-item flex items-center p-3 text-gray-400 hover:text-white"><i class="fas fa-users mr-3 w-5"></i> Community</a></li>
+            <li><a href="profile.html" class="nav-item flex items-center p-3 text-gray-400 hover:text-white"><i class="fas fa-user mr-3 w-5"></i> Profile</a></li>
+            <li><a href="settings.html" class="nav-item flex items-center p-3 text-gray-400 hover:text-white"><i class="fas fa-cog mr-3 w-5"></i> Settings</a></li>
+            <li><a href="index.html" onclick="logout()" class="nav-item flex items-center p-3 text-gray-400 hover:text-white"><i class="fas fa-sign-out-alt mr-3 w-5"></i> Logout</a></li>
+        </ul>
+        
+        <div class="mt-10 p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-lg border border-blue-500/20">
+            <h3 class="font-semibold text-white mb-2">Need help?</h3>
+            <p class="text-xs text-gray-400 mb-3">Our support team is available 24/7</p>
+            <button class="btn-primary text-xs py-2 px-4 rounded-lg w-full">Contact Support</button>
+        </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="flex-1 p-6 overflow-auto">
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-8">
+            <div>
+                <h2 class="text-3xl font-bold text-white">Trading Dashboard</h2>
+                <p class="text-gray-400">Welcome back, John! Here's your trading overview.</p>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <div class="relative">
+                    <input type="text" placeholder="Search..." class="search-input py-2 px-4 rounded-lg text-white pl-10 w-64">
+                    <i class="fas fa-search absolute left-3 top-3 text-gray-500"></i>
+                </div>
+                
+                <div class="relative">
+                    <button class="w-10 h-10 rounded-full bg-dark-700 flex items-center justify-center text-gray-400 hover:text-white">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-dot"></span>
+                    </button>
+                </div>
+                
+                <button class="md:hidden text-gray-400 hover:text-white">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </header>
+        
+        <!-- Stats Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+            <div class="stat-card p-5">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-gray-400 text-sm">Total Balance</p>
+                        <h3 class="text-2xl font-bold text-white">$12,458.75</h3>
+                        <p class="text-success text-sm mt-1"><i class="fas fa-arrow-up mr-1"></i> 4.3% today</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                        <i class="fas fa-wallet text-blue-500"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stat-card p-5">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-gray-400 text-sm">Active Bots</p>
+                        <h3 class="text-2xl font-bold text-white">7</h3>
+                        <p class="text-gray-400 text-sm mt-1">2 paused</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-lg bg-green-500/10 flex items-center justify-center">
+                        <i class="fas fa-robot text-green-500"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stat-card p-5">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-gray-400 text-sm">Today's Profit</p>
+                        <h3 class="text-2xl font-bold text-white">$342.89</h3>
+                        <p class="text-success text-sm mt-1"><i class="fas fa-arrow-up mr-1"></i> 2.8%</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-lg bg-purple-500/10 flex items-center justify-center">
+                        <i class="fas fa-chart-line text-purple-500"></i>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="stat-card p-5">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p class="text-gray-400 text-sm">Open Positions</p>
+                        <h3 class="text-2xl font-bold text-white">5</h3>
+                        <p class="text-gray-400 text-sm mt-1">3 long, 2 short</p>
+                    </div>
+                    <div class="w-12 h-12 rounded-lg bg-yellow-500/10 flex items-center justify-center">
+                        <i class="fas fa-exchange-alt text-yellow-500"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Charts and Bots -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Performance Chart -->
+            <div class="card p-6 col-span-1">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-semibold text-white">Performance Chart</h3>
+                    <select class="bg-dark-700 border border-gray-700 text-white text-sm rounded-lg px-3 py-2">
+                        <option>Last 7 days</option>
+                        <option>Last 30 days</option>
+                        <option>Last 90 days</option>
+                    </select>
+                </div>
+                <div class="chart-container">
+                    <canvas id="performanceChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- My Bots -->
+            <div class="card p-6 col-span-1">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-semibold text-white">My Trading Bots</h3>
+                    <button class="btn-primary py-2 px-4 rounded-lg text-sm">Create New</button>
+                </div>
+                
+                <div class="space-y-4" id="myBotsList">
+                    <!-- Bot items will be dynamically added here -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Activity and Market Overview -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Recent Activity -->
+            <div class="card p-6">
+                <h3 class="text-xl font-semibold text-white mb-6">Recent Activity</h3>
+                <div class="space-y-4" id="activityList">
+                    <!-- Activity items will be dynamically added here -->
+                </div>
+            </div>
+            
+            <!-- Market Overview -->
+            <div class="card p-6">
+                <h3 class="text-xl font-semibold text-white mb-6">Market Overview</h3>
+                <div class="space-y-4">
+                    <div class="flex justify-between items-center p-3 bg-dark-700/30 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center mr-3">
+                                <i class="fab fa-bitcoin text-blue-500"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-white">BTC/USD</p>
+                                <p class="text-xs text-gray-400">Bitcoin</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-medium text-white">$43,567.23</p>
+                            <p class="text-success text-xs"><i class="fas fa-arrow-up mr-1"></i> 2.4%</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center p-3 bg-dark-700/30 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-purple-500/10 flex items-center justify-center mr-3">
+                                <i class="fab fa-ethereum text-purple-500"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-white">ETH/USD</p>
+                                <p class="text-xs text-gray-400">Ethereum</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-medium text-white">$2,345.67</p>
+                            <p class="text-success text-xs"><i class="fas fa-arrow-up mr-1"></i> 1.8%</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center p-3 bg-dark-700/30 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-red-500/10 flex items-center justify-center mr-3">
+                                <i class="fas fa-dollar-sign text-red-500"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-white">EUR/USD</p>
+                                <p class="text-xs text-gray-400">Forex</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-medium text-white">1.0987</p>
+                            <p class="text-danger text-xs"><i class="fas fa-arrow-down mr-1"></i> 0.4%</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center p-3 bg-dark-700/30 rounded-lg">
+                        <div class="flex items-center">
+                            <div class="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center mr-3">
+                                <i class="fas fa-chart-line text-green-500"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-white">SPX</p>
+                                <p class="text-xs text-gray-400">S&P 500</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-medium text-white">4,567.89</p>
+                            <p class="text-success text-xs"><i class="fas fa-arrow-up mr-1"></i> 0.7%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Simulate fetching bots and activity
+            const bots = [
+                { name: 'Trend Rider BTC', status: 'active', profit: '+12.4%' },
+                { name: 'Scalper Pro ETH', status: 'active', profit: '+8.2%' },
+                { name: 'Swing Trader Forex', status: 'paused', profit: '+5.7%' },
+                { name: 'Arbitrage Bot', status: 'stopped', profit: '-2.1%' }
+            ];
+            
+            const activities = [
+                { action: 'Created new bot', name: 'Trend Rider BTC', time: '2 hours ago' },
+                { action: 'Bought', name: 'ETH at $2,312.45', time: '5 hours ago' },
+                { action: 'Sold', name: 'BTC at $43,123.89', time: 'Yesterday' },
+                { action: 'Modified', name: 'Scalper Pro settings', time: '2 days ago' }
+            ];
+            
+            const botsList = document.getElementById('myBotsList');
+            const activityList = document.getElementById('activityList');
+            
+            // Render bots
+            bots.forEach(bot => {
+                const botEl = document.createElement('div');
+                botEl.className = `p-4 rounded-lg bot-status-${bot.status} animate-fade-in`;
+                botEl.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <h4 class="font-medium text-white">${bot.name}</h4>
+                            <div class="flex items-center mt-1">
+                                <span class="text-xs px-2 py-1 rounded-full ${bot.status === 'active' ? 'bg-green-500/20 text-green-500' : bot.status === 'paused' ? 'bg-yellow-500/20 text-yellow-500' : 'bg-red-500/20 text-red-500'}">${bot.status.charAt(0).toUpperCase() + bot.status.slice(1)}</span>
+                                <span class="text-xs ml-2 ${bot.profit.startsWith('+') ? 'text-success' : 'text-danger'}">${bot.profit}</span>
+                            </div>
+                        </div>
+                        <div class="flex space-x-2">
+                            <button class="w-8 h-8 rounded-lg bg-dark-700 flex items-center justify-center text-gray-400 hover:text-white">
+                                <i class="fas ${bot.status === 'active' ? 'fa-pause' : 'fa-play'} text-xs"></i>
+                            </button>
+                            <button class="w-8 h-8 rounded-lg bg-dark-700 flex items-center justify-center text-gray-400 hover:text-white">
+                                <i class="fas fa-cog text-xs"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+                botsList.appendChild(botEl);
+            });
+            
+            // Render activities
+            activities.forEach(activity => {
+                const activityEl = document.createElement('div');
+                activityEl.className = 'activity-item pl-4 py-3 animate-fade-in';
+                activityEl.innerHTML = `
+                    <div class="flex justify-between">
+                        <div>
+                            <p class="text-white"><span class="font-medium">${activity.action}</span> ${activity.name}</p>
+                            <p class="text-gray-400 text-sm">${activity.time}</p>
+                        </div>
+                        <button class="text-gray-400 hover:text-white">
+                            <i class="fas fa-ellipsis-v"></i>
+                        </button>
+                    </div>
+                `;
+                activityList.appendChild(activityEl);
+            });
+            
+            // Initialize performance chart
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            const performanceChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Portfolio Value',
+                        data: [12000, 12300, 11800, 12200, 12400, 12500, 12458],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.3,
+                        pointBackgroundColor: '#3b82f6',
+                        pointRadius: 3,
+                        pointHoverRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            grid: {
+                                color: 'rgba(71, 85, 105, 0.3)'
+                            },
+                            ticks: {
+                                color: 'rgba(156, 163, 175, 1)',
+                                callback: function(value) {
+                                    return '$' + value.toLocaleString();
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(71, 85, 105, 0.3)'
+                            },
+                            ticks: {
+                                color: 'rgba(156, 163, 175, 1)'
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
