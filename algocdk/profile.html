@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - AlgoCDK</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    colors: {
+                        dark: {
+                            900: '#0f172a',
+                            800: '#1e293b',
+                            700: '#334155',
+                        },
+                        primary: {
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3极s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 极 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5极2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%233b82f6' fill-opacity='0.05' fill-rule='evenodd'/%3极%3C/svg%3E");
+            opacity: 0.5;
+            z-index: -1;
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #60a5fa 0%, #3b82f6 25%, #6366f1 50%, #8b5cf6 75%, #a855f7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: gradientMove 5s ease infinite;
+        }
+        
+        @keyframes gradientMove {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .sidebar {
+            background: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(56, 66, 85, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item {
+            position: relative;
+            transition: all 0.3s ease;
+            border-radius: 8px;
+        }
+        
+        .nav-item:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .nav-item.active {
+            background: rgba(59, 130, 246, 0.2);
+        }
+        
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 60%;
+            width: 4px;
+            background: linear-gradient(to bottom, #3b82f6, #6366f1);
+            border-radius: 0 4px 4px 0;
+        }
+        
+        .card {
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(30, 41, 59, 0.6);
+            border: 1px solid rgba(71, 85, 105, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-secondary:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(30, 41, 59, 0.9));
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px -5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .tab-button {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .tab-button.active {
+            border-bottom-color: #3b82f6;
+            color: white;
+        }
+        
+        .progress-bar {
+            background: rgba(71, 85, 105, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        
+        .user-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 2.5rem;
+        }
+        
+        .badge {
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            border-radius: 20px;
+            padding: 4px 12px;
+            font-size: 0.75rem;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .activity-item {
+            border-left: 3px solid #3b82f6;
+            transition: all 0.3s ease;
+        }
+        
+        .activity-item:hover {
+            background: rgba(30, 41, 59, 0.5);
+            transform: translateX(5px);
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fade-in {
+            animation: fade极 0.5s ease forwards;
+        }
+    </style>
+</head>
+<body class="flex">
+    <!-- Sidebar -->
+    <aside class="sidebar w-64 p-6 h-screen sticky top-0 hidden md:block">
+        <div class="flex items-center mb-10">
+            <h1 class="text-2xl font-bold gradient-text">AlgoCDK</h1>
+        </div>
+        
+        <div class="mb-8 flex items-center p-3 bg-dark-700/30 rounded-lg">
+            <div class="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold mr-3">JD</div>
+            <div>
+                <p class="font-medium text-white">John Doe</p>
+                <p class="text-xs text-gray-400">Pro Trader</p>
+            </div>
+        </div>
+        
+        <ul class="space-y-2">
+            <li><a href="dashboard.html" class="nav-item flex items-center p-3 text-gray-400 hover:text-white"><i class="fas fa-chart-pie mr-3 w-5"></i> Dashboard</a></li>
+            <li><a href="create-bot.html" class="nav-item flex items-center p-3 text-gray-400 hover:text-white"><i class="fas fa-robot mr-3 w-5"></i> Create Bot</a></li>
+            <li><a href="marketplace.html" class="nav-item flex items-center p-3 text-gray-400 hover:text-white"><i class="fas fa-store mr-3 w-5"></i> Marketplace</a></li>
+            <li><a href="analysis.html" class="nav-item flex items-center p-3 text-gray-400 hover:text-white"><i class="fas fa-chart-line mr-3 w-5"></i> Analysis</a></li>
+            <li><a href="community.html" class="nav-item flex items-center p-3 text-gray-400 hover:text-white"><i class="fas极users mr-3 w-5"></i> Community</a></li>
+            <li><a href="profile.html" class="nav-item active flex items-center p-3 text-white"><i class="fas fa-user mr-3 w-5"></i> Profile</a></li>
+            <li><a href="settings.html" class="nav-item flex items-center p-3 text-gray-400 hover:text-white"><i class="fas fa-cog mr-3 w-5"></i> Settings</a></li>
+            <li><a href="index.html" onclick="logout()" class="nav-item flex items-center p-3 text-gray-400 hover:text-white"><极 class="fas fa-sign-out-alt mr-3 w-5"></i> Logout</a></li>
+        </ul>
+        
+        <div class="mt-10 p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-lg border border-blue-500/20">
+            <h3 class="font-semibold text-white mb-2">Profile Completion</h3>
+            <div class="w-full bg-gray-700 rounded-full h-2 mb-2">
+                <div class="progress-fill bg-blue-500" style="width: 75%"></div>
+            </div>
+            <p class="text-xs text-gray-400">75% complete</p>
+        </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="flex-1 p-6 overflow-auto">
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-8">
+            <div>
+                <h2 class="text-3xl font-bold text-white">Your Profile</h2>
+                <p class="text-gray-400">Manage your account and track your trading performance</p>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <button class="btn-secondary py-2 px-4 rounded-lg flex items-center">
+                    <i class="fas fa-download mr-2"></i> Export Data
+                </button>
+                
+                <button class="md:hidden text-gray-400 hover:text-white">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </header>
+        
+        <!-- Profile Overview -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <!-- Profile Card -->
+            <div class="card p-6 col-span-1">
+                <div class="flex flex-col items-center mb-6">
+                    <div class="user-avatar bg-gradient-to-r from-blue-500 to-purple-500 text-white mb-4">JD</div>
+                    <h3 id="username" class="text-2xl font-semibold text-white">John Doe</h3>
+                    <p class="text-gray-400 mb-2">Pro Trader</p>
+                    <div class="flex space-x-2">
+                        <span class="badge"><i class="fas fa-star mr-1"></i> Level 5</span>
+                        <span class="badge"><i class="fas fa-medal mr-1"></i> Top 10%</span>
+                    </div>
+                </div>
+                
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-400">Member since</span>
+                        <span class="text-white">Jan 2023</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-400">Last active</span>
+                        <span class="text-white">Today, 14:32</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-gray-400">Status</span>
+                        <span class="text-green-500">Online</span>
+                    </div>
+                </div>
+                
+                <button onclick="editProfile()" class="btn-primary w-full py-3 rounded-lg mt-6 flex items-center justify-center">
+                    <i class="fas fa-edit mr-2"></i> Edit Profile
+                </button>
+            </div>
+            
+            <!-- Stats Overview -->
+            <div class="col-span-2">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div class="stat-card p-4 text-center">
+                        <p class="text-3xl font-bold text-white">$12,458</p>
+                        <p class="text-sm text-gray-400">Account Balance</p>
+                    </div>
+                    
+                    <div class="stat-card p-4 text-center">
+                        <p class="text-3xl font-bold text-white">+24.7%</p>
+                        <p class="text-sm text-gray-400">Total Profit</p>
+                    </div>
+                    
+                    <div class="stat-card p-4 text-center">
+                        <p class="text-3xl font-bold text-white">76%</p>
+                        <p class="text-sm text-gray-400">Win Rate</p>
+                    </div>
+                    
+                    <div class="stat-card p-4 text-center">
+                        <p class="text-3xl font-bold text-white">142</p>
+                        <p class="text-sm text-gray-400">Total Trades</p>
+                    </div>
+                </div>
+                
+                <div class="card p-6">
+                    <h3 class="text-xl font-semibold text-white mb-4">Performance Chart</h3>
+                    <div class="h-40">
+                        <canvas id="performanceChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Profile Tabs -->
+        <div class="flex border-b border-gray-700 mb-6">
+            <button class="tab-button py-3 px-6 mr-4 active" data-tab="overview">Overview</button>
+            <button class="tab-button py-3 px-6 mr-4" data-tab="activity">Activity</button>
+            <button class="tab-button py-3 px-6 mr-4" data-tab="bots">My Bots</button>
+            <button class="tab-button py-3 px-6" data-tab="achievements">Achievements</button>
+        </div>
+        
+        <!-- Tab Content -->
+        <div id="tabContent">
+            <!-- Overview Tab -->
+            <div class="tab-pane active" id="overview">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="card p-6">
+                        <h3 class="text-xl font-semibold text-white mb-4">Personal Information</h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <p class="text-sm text-gray-400">Username</p>
+                                <p id="profileUsername" class="text-white">johndoe</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-400">Email</p>
+                                <p id="profileEmail" class="text-white">john.doe@example.com</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-400">Bio</p>
+                                <p id="profileBio" class="text-white">Algorithmic trader specializing in forex and crypto markets. I develop mean reversion and trend following strategies.</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-400">Location</p>
+                                <p class="text-white">New York, USA</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card p-6">
+                        <h3 class="text-xl font-semibold text-white mb-4">Trading Preferences</h3>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <p class="text-sm text-gray-400">Preferred Markets</p>
+                                <div class="flex flex-wrap gap-2 mt-1">
+                                    <span class="badge">Forex</span>
+                                    <span class="badge">Crypto</span>
+                                    <span class="badge">Indices</span>
+                                </div>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-400">Trading Style</p>
+                                <p class="text-white">Swing Trading</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-400">Risk Tolerance</p>
+                                <p class="text-white">Medium</p>
+                            </div>
+                            <div>
+                                <p class="text-sm text-gray-400">Experience Level</p>
+                                <p class="text-white">Advanced</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Activity Tab (initially hidden) -->
+            <div class="tab-pane hidden" id="activity">
+                <div class="card p-6">
+                    <h3 class="text-xl font-semibold text-white mb-4">Recent Activity</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="activity-item pl-4 py-3">
+                            <div class="flex justify-between items-center mb-2">
+                                <p class="font-medium text-white">Created new trading bot "Trend Rider"</p>
+                                <span class="text-sm text-gray-400">2 hours ago</span>
+                            </div>
+                            <p class="text-gray-300 text-sm">EMA crossover strategy for BTC/USD</p>
+                        </div>
+                        
+                        <div class="activity-item pl-4 py-3">
+                            <div class="flex justify-between items-center mb-2">
+                                <p class="font-medium text-white">Posted in community forum</p>
+                                <span class="text-sm text-gray-400">5 hours ago</span>
+                            </div>
+                            <p class="text-gray-300 text-sm">"Best practices for backtesting strategies"</p>
+                        </div>
+                        
+                        <div class="activity-item pl-4 py-3">
+                            <div class="flex justify-between items-center mb-2">
+                                <p class="font-medium text-white">Purchased "Scalper Pro" bot</p>
+                                <span class="text-sm text-gray-400">Yesterday</span>
+                            </div>
+                            <p class="text-gray-300 text-sm">High-frequency trading bot for forex</p>
+                        </div>
+                        
+                        <div class="activity-item pl-4 py-3">
+                            <div class="flex justify-between items-center mb-2">
+                                <p class="font-medium text-white">Completed advanced trading course</p>
+                                <span class="text-sm text-gray-400">3 days ago</span>
+                            </div>
+                            <p class="text-gray-300 text-sm">Machine Learning for Algorithmic Trading</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bots Tab (initially hidden) -->
+            <div class="tab-pane hidden" id="bots">
+                <div class="card p-6">
+                    <h3 class="text-xl font-semibold text-white mb-4">My Trading Bots</h3>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b border-gray-700">
+                                    <th class="pb-3 text-left text-gray-400">Bot Name</th>
+                                    <th class="pb-3 text-left text-gray-400">Market</th>
+                                    <th class="pb-3 text-left text-gray-400">Status</th>
+                                    <th class="pb-3 text-left text-gray-400">Profit</th>
+                                    <th class="pb-3 text-left text-gray-400">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="border-b border-gray-800">
+                                    <td class="py-3 text-white">Trend Rider</td>
+                                    <td class="py-3 text-gray-400">BTC/USD</td>
+                                    <td class="py-3"><span class="badge bg-green-500/20 text-green-500">Active</span></td>
+                                    <td class="py-3 text-green-500">+12.4%</td>
+                                    <td class="py-3">
+                                        <button class="text-blue-400 hover:text-blue-300 mr-2">
+                                            <i class="fas fa-play"></i>
+                                        </button>
+                                        <button class="text-gray-400 hover:text-white mr-2">
+                                            <i class="fas fa-cog"></i>
+                                        </button>
+                                        <button class="text-red-400 hover:text-red-300">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="border-b border-gray-800">
+                                    <td class="py-3 text-white">Mean Reversion</td>
+                                    <td class="py-3 text-gray-400">EUR/USD</td>
+                                    <td class="py-3"><span class="badge bg-yellow-500/20 text-yellow-500">Paused</span></td>
+                                    <td class="py-3 text-green-500">+8.2%</td>
+                                    <td class="py-3">
+                                        <button class="text-blue-400 hover:text-blue-300 mr-2">
+                                            <i class="fas fa-play"></i>
+                                        </button>
+                                        <button class="text-gray-400 hover:text-white mr-2">
+                                            <i class="fas fa-cog"></i>
+                                        </button>
+                                        <button class="text-red-400 hover:text-red-300">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 text-white">Volatility Breakout</td>
+                                    <td class="py-3 text-gray-400">Gold</td>
+                                    <td class="py-3"><span class="badge bg-red-500/20 text-red-500">Stopped</span></td>
+                                    <td class="py-3 text-red-500">-2.1%</td>
+                                    <td class="py-3">
+                                        <button class="text-blue-400 hover:text-blue-300 mr-2">
+                                            <i class="fas fa-play"></i>
+                                        </button>
+                                        <button class="text-gray-400 hover:text-white mr-2">
+                                            <i class="fas fa-cog"></i>
+                                        </button>
+                                        <button class="text-red-400 hover:text-red-300">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Achievements Tab (initially hidden) -->
+            <div class="tab-pane hidden" id="achievements">
+                <div class="card p-6">
+                    <h3 class="text-xl font-semibold text-white mb-4">Achievements</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-dark-700/30 p-4 rounded-lg flex items-center">
+                            <div class="w-12 h-12 rounded-full bg-yellow-500/10 flex items-center justify-center mr-4">
+                                <i class="fas fa-medal text-yellow-500 text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-white">First Trade</p>
+                                <p class="text-xs text-gray-400">Execute your first successful trade</p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-dark-700/30 p-4 rounded-lg flex items-center">
+                            <div class="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center mr-4">
+                                <i class="fas fa-robot text-blue-500 text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-white">Bot Creator</p>
+                                <p class="text-xs text-gray-400">Create your first trading bot</p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-dark-700/30 p-4 rounded-lg flex items-center">
+                            <div class="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center mr-4">
+                                <i class="fas fa-chart-line text-green-500 text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-white">Profit Master</p>
+                                <p class="text-xs text-gray-400">Reach $1,000 in total profits</p>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-dark-700/30 p-4 rounded-lg flex items-center">
+                            <div class="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center mr-4">
+                                <i class="fas fa-comments text-purple-500 text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-white">Community Contributor</p>
+                                <p class="text-xs text-gray-400">Make 10 helpful forum posts</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Load user data
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            document.getElementById('username').textContent = user.username || 'User';
+            document.getElementById('profileUsername').textContent = user.username || 'username';
+            document.getElementById('profileEmail').textContent = user.email || 'user@example.com';
+            document.getElementById('profileBio').textContent = user.bio || 'No bio yet.';
+            
+            // Initialize performance chart
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'Portfolio Value',
+                        data: [10000, 10500, 11000, 10700, 11500, 12000, 11800, 12200, 12500, 12700, 13000, 12458],
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        tension: 0.3,
+                        pointRadius: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            display: false
+                        },
+                        x: {
+                            display: false
+                        }
+                    }
+                }
+            });
+            
+            // Tab functionality
+            document.querySelectorAll('.tab-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all tabs
+                    document.querySelectorAll('.tab-button').forEach(btn => {
+                        btn.classList.remove('active');
+                    });
+                    
+                    // Hide all tab panes
+                    document.querySelectorAll('.tab-pane').forEach(pane => {
+                        pane.classList.add('hidden');
+                        pane.classList.remove('active');
+                    });
+                    
+                    // Add active class to clicked tab
+                    this.classList.add('active');
+                    
+                    // Show corresponding tab pane
+                    const tabName = this.getAttribute('data-tab');
+                    document.getElementById(tabName).classList.remove('hidden');
+                    document.getElementById(tabName).classList.add('active');
+                });
+            });
+        });
+
+        function editProfile() {
+            // In a real app, this would open a modal or redirect to an edit page
+            showNotification('Edit profile functionality would open here', 'info');
+        }
+        
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 px-4 py-3 rounded-lg shadow-lg animate-fade-in ${
+                type === 'success' ? 'bg-green-500' : 
+                type === 'error' ? 'bg-red-500' : 'bg-blue-500'
+            } text-white`;
+            notification.textContent = message;
+            
+            // Add to page
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
